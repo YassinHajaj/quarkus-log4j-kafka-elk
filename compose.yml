@@ -49,7 +49,7 @@ services:
     hostname: quarkus
     container_name: quarkus
     ports:
-      - "8081:8080"
+      - "8082:8080"
     environment:
       KAFKA_BOOTSTRAP_SERVER: kafka-broker:19092
     depends_on:
@@ -73,7 +73,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: 'kafka-broker:9092'
+      CONNECT_BOOTSTRAP_SERVERS: 'kafka-broker:19092'
       CONNECT_REST_ADVERTISED_HOST_NAME: connect
       CONNECT_REST_PORT: 8083
       CONNECT_GROUP_ID: compose-connect-group
@@ -84,5 +84,26 @@ services:
       CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_ZOOKEEPER_CONNECT: 'zookeeper-container:2181'
+      CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry-container:8081'
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry-container:8081'
+      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
     volumes:
       - ./kafka-connect:/etc/kafka-connect/jars
+
+  schema-registry-container:
+    image: "confluentinc/cp-schema-registry:4.1.0"
+    hostname: schema-registry-container
+    container_name: schema-registry-container
+    depends_on:
+      - zookeeper-container
+      - kafka-broker
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema_registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper-container:2181'
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: 'GET,POST,PUT,OPTIONS'
