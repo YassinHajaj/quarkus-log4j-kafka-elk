@@ -268,7 +268,7 @@ This should print the following
 
 Success !
 
-
+![Success !](./static/success.gif)
 
 ## ElasticSearch
 
