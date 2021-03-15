@@ -137,7 +137,73 @@ And as the last step, we'll use the jvm `Dockerfile` provided by Quarkus and bui
 
 ## Apache Kafka
 
-Now that we have configured the application
+Now that we have configured the application, we'll create our `docker-compose.yml` file and start adding our building
+blocks to it.
+
+```
+version: '2.1'
+
+services:
+   -> we'll add the following building blocks here <-
+```
+
+### ZooKeeper & Kafka Broker
+
+For this, we'll just reuse the docker-compose
+from [Stephane Maarek's Conduktor](https://github.com/conduktor/kafka-stack-docker-compose)
+
+If you reuse it and want to use your own namings, don't forget to change those in there at all places
+
+```
+zookeeper-container:
+  image: zookeeper:3.4.9
+  hostname: zookeeper-container
+  container_name: zookeeper-container
+  ports:
+    - "2181:2181"
+  environment:
+    ZOO_MY_ID: 1
+    ZOO_PORT: 2181
+    ZOO_SERVERS: server.1=zookeeper-container:2888:3888
+
+kafka-broker:
+  image: confluentinc/cp-kafka:5.5.1
+  hostname: kafka-broker
+  container_name: kafka-broker
+  ports:
+    - "9092:9092"
+  environment:
+    KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka-broker:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
+    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+    KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+    KAFKA_ZOOKEEPER_CONNECT: "zookeeper-container:2181"
+    KAFKA_BROKER_ID: 1
+    KAFKA_LOG4J_LOGGERS: "kafka.controller=ERROR,kafka.producer.async.DefaultEventHandler=ERROR,state.change.logger=ERROR"
+    KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  depends_on:
+    - zookeeper-container
+```
+
+### Quarkus Application
+
+Now that we've done that, we'll configure minimastically the Quarkus application
+
+```
+quarkus:
+  image: quarkus/quarkus-log4j2-kafka-elk-jvm
+  hostname: quarkus
+  container_name: quarkus
+  ports:
+    - "8082:8080"
+  environment:
+    KAFKA_BOOTSTRAP_SERVER: kafka-broker:19092
+  depends_on:
+    - kafka-broker
+```
+
+You noticed the environment variable `KAFKA_BOOTSTRAP_SERVER`, if you remember correctly from our `log4j2`, we had the following configuration which uses this environment variable:
+
+`<Property name="bootstrap.servers">${env:KAFKA_BOOTSTRAP_SERVER}</Property>`
 
 ## ElasticSearch
 
