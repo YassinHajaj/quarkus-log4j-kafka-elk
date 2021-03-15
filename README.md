@@ -109,9 +109,35 @@ We can also notice the usage of `<Logger name="org.apache.kafka" level="INFO"/>`
 It comes from
 the [official documentation](https://logging.apache.org/log4j/log4j-2.4/manual/appenders.html#KafkaAppender).
 
-![kafka-appendar](./static/log4j2-kafka-appender-recursive-logging.png)
+![kafka-appender](./static/log4j2-kafka-appender-recursive-logging.png)
+
+To make the `JsonLayout` and the `KafkaAppender` work, we'll need to use the following Maven dependencies too
+
+```
+<dependency>
+    <groupId>org.apache.kafka</groupId>
+    <artifactId>kafka-clients</artifactId>
+    <version>2.7.0</version>
+</dependency>
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-core</artifactId>
+    <version>2.12.2</version>
+</dependency>
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.12.2</version>
+</dependency>
+```
+
+And as the last step, we'll use the jvm `Dockerfile` provided by Quarkus and build our image
+
+`docker build -f src/main/docker/Dockerfile.jvm -t quarkus/quarkus-log4j2-kafka-elk-jvm .`
 
 ## Apache Kafka
+
+Now that we have configured the application
 
 ## ElasticSearch
 
