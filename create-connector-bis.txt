@@ -7,8 +7,10 @@ curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json
         "topics":"quarkus-logs",
         "type.name":"_doc",
         "name":"quarkus-logs-elasticsearch-connector",
-        "value.converter":"org.apache.kafka.connect.storage.StringConverter",
+        "value.converter":"org.apache.kafka.connect.json.JsonConverter",
         "value.converter.schemas.enable":"false",
+        "key.converter.schemas.enable":"false",
+        "schemas.enable":"false",
         "schema.ignore":"true",
         "key.ignore":"true"
      }

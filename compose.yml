@@ -11,9 +11,6 @@ services:
       ZOO_MY_ID: 1
       ZOO_PORT: 2181
       ZOO_SERVERS: server.1=zookeeper-container:2888:3888
-#    volumes:
-#      - ./zk-single-kafka-single/zookeeper-container/data:/data
-#      - ./zk-single-kafka-single/zookeeper-container/datalog:/datalog
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:2181" ]
       interval: 30s
@@ -34,8 +31,6 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_LOG4J_LOGGERS: "kafka.controller=ERROR,kafka.producer.async.DefaultEventHandler=ERROR,state.change.logger=ERROR"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#    volumes:
-#      - ./zk-single-kafka-single/kafka-broker/data:/var/lib/kafka/data
     depends_on:
       - zookeeper-container
     healthcheck:
@@ -84,15 +79,13 @@ services:
       CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_ZOOKEEPER_CONNECT: 'zookeeper-container:2181'
-      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
-      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry-container:8081'
-      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.storage.StringConverter
-      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry-container:8081'
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
       CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_LOG4J_LOGGERS=org: reflections=ERROR
-#    volumes:
-#      - ./kafka-connect:/etc/kafka-connect/jars
+      CONNECT_LOG4J_LOGGERS: org.apache.kafka.connect=DEBUG
 
   schema-registry-container:
     image: "confluentinc/cp-schema-registry:4.1.0"
