@@ -62,7 +62,8 @@ public class GreetingResource {
 }
 ```
 
-This simply means that, after log4j2 is configured, whenever we'll call `/hello-resteasy`, `Hello called` will get printed to the console.
+This simply means that, after log4j2 is configured, whenever we'll call `/hello-resteasy`, `Hello called` will get
+printed to the console.
 
 And whenever we'll call `/hello-resteasy/error`, `Error called` will get printed to the console.
 
@@ -95,7 +96,20 @@ We'll only need to configure `log4j2` in the following way
 </Configuration>
 ```
 
-We notice that the `log4j2` appender used is the `KafkaAppender`.
+We notice that the `log4j2` appender used is the `KafkaAppender` which will serve as a `Kafka Consumer` out-of-the-box.
+
+The properties used are:
+
+* `bootstrap.servers` : This serves to point to our broker. It will help create the topic and write to it
+* `acks` : set at 0 (equivalent to shoot and forget), meaning there is no acknowledgment of message receival. For logs,
+  as they're not crucial, it's not needed to have strong delivery guarantees.
+
+We can also notice the usage of `<Logger name="org.apache.kafka" level="INFO"/>` to avoid recursive logging.
+
+It comes from
+the [official documentation](https://logging.apache.org/log4j/log4j-2.4/manual/appenders.html#KafkaAppender).
+
+![kafka-appendar](./static/log4j2-kafka-appender-recursive-logging.png)
 
 ## Apache Kafka
 
