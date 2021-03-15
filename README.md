@@ -205,6 +205,71 @@ You noticed the environment variable `KAFKA_BOOTSTRAP_SERVER`, if you remember c
 
 `<Property name="bootstrap.servers">${env:KAFKA_BOOTSTRAP_SERVER}</Property>`
 
+### Time to test this !
+
+Now that this is done, we'll test it.
+
+Then, of course, we'll continue with Kafka-Connect, ElasticSearch and Kibana.
+
+Let's start by doing two `curl`
+
+```
+$ curl http://localhost:8082/hello-resteasy
+$ curl http://localhost:8082/hello-resteasy/error
+```
+
+Now, that is done, we should find our logs back in the topic. Let's check !
+
+```
+docker exec -it "kafka-broker" kafka-console-consumer --topic quarkus-logs --bootstrap-server localhost:9092 --from-beginning
+```
+
+This should print the following
+
+```
+{
+  "timeMillis" : 1615852382532,
+  "thread" : "executor-thread-1",
+  "level" : "INFO",
+  "loggerName" : "be.yh.GreetingResource",
+  "message" : "Hello called",
+  "endOfBatch" : false,
+  "loggerFqcn" : "org.apache.logging.log4j.spi.AbstractLogger",
+  "contextMap" : [ ],
+  "threadId" : 17,
+  "threadPriority" : 5,
+  "source" : {
+    "class" : "be.yh.GreetingResource",
+    "method" : "hello",
+    "file" : "GreetingResource.java",
+    "line" : 19
+  }
+}
+
+{
+  "timeMillis" : 1615852387316,
+  "thread" : "executor-thread-1",
+  "level" : "ERROR",
+  "loggerName" : "be.yh.GreetingResource",
+  "message" : "Error called",
+  "endOfBatch" : false,
+  "loggerFqcn" : "org.apache.logging.log4j.spi.AbstractLogger",
+  "contextMap" : [ ],
+  "threadId" : 17,
+  "threadPriority" : 5,
+  "source" : {
+    "class" : "be.yh.GreetingResource",
+    "method" : "error",
+    "file" : "GreetingResource.java",
+    "line" : 27
+  }
+}
+```
+
+Success !
+
+
+
 ## ElasticSearch
 
 ## Kibana

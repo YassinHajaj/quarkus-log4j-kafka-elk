@@ -40,65 +40,65 @@ services:
     depends_on:
       - kafka-broker
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
-    container_name: elasticsearch
-    ports:
-      - 9200:9200
-    environment:
-      - discovery.type=single-node
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.11.2
-    container_name: kibana
-    ports:
-      - 5601:5601
-    environment:
-      ELASTICSEARCH_URL: http://elasticsearch:9200
-      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
-    depends_on:
-      - elasticsearch
-
-  kafka-connect:
-    image: confluentinc/cp-kafka-connect:3.3.0
-    hostname: kafka-connect
-    container_name: kafka-connect
-    depends_on:
-      - zookeeper-container
-      - kafka-broker
-    ports:
-      - "8083:8083"
-    environment:
-      CONNECT_BOOTSTRAP_SERVERS: 'kafka-broker:19092'
-      CONNECT_REST_ADVERTISED_HOST_NAME: connect
-      CONNECT_REST_PORT: 8083
-      CONNECT_GROUP_ID: compose-connect-group
-      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
-      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
-      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
-      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_ZOOKEEPER_CONNECT: 'zookeeper-container:2181'
-      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
-      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
-      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_LOG4J_LOGGERS: org.apache.kafka.connect=DEBUG
-
-  schema-registry-container:
-    image: "confluentinc/cp-schema-registry:4.1.0"
-    hostname: schema-registry-container
-    container_name: schema-registry-container
-    depends_on:
-      - zookeeper-container
-      - kafka-broker
-    ports:
-      - "8081:8081"
-    environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema_registry
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper-container:2181'
-      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
-      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: 'GET,POST,PUT,OPTIONS'
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
+#    container_name: elasticsearch
+#    ports:
+#      - 9200:9200
+#    environment:
+#      - discovery.type=single-node
+#
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:7.11.2
+#    container_name: kibana
+#    ports:
+#      - 5601:5601
+#    environment:
+#      ELASTICSEARCH_URL: http://elasticsearch:9200
+#      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+#    depends_on:
+#      - elasticsearch
+#
+#  kafka-connect:
+#    image: confluentinc/cp-kafka-connect:3.3.0
+#    hostname: kafka-connect
+#    container_name: kafka-connect
+#    depends_on:
+#      - zookeeper-container
+#      - kafka-broker
+#    ports:
+#      - "8083:8083"
+#    environment:
+#      CONNECT_BOOTSTRAP_SERVERS: 'kafka-broker:19092'
+#      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+#      CONNECT_REST_PORT: 8083
+#      CONNECT_GROUP_ID: compose-connect-group
+#      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+#      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+#      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+#      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+#      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+#      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+#      CONNECT_ZOOKEEPER_CONNECT: 'zookeeper-container:2181'
+#      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+#      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+#      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
+#      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
+#      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+#      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+#      CONNECT_LOG4J_LOGGERS: org.apache.kafka.connect=DEBUG
+#
+#  schema-registry-container:
+#    image: "confluentinc/cp-schema-registry:4.1.0"
+#    hostname: schema-registry-container
+#    container_name: schema-registry-container
+#    depends_on:
+#      - zookeeper-container
+#      - kafka-broker
+#    ports:
+#      - "8081:8081"
+#    environment:
+#      SCHEMA_REGISTRY_HOST_NAME: schema_registry
+#      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper-container:2181'
+#      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
+#      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: 'GET,POST,PUT,OPTIONS'
