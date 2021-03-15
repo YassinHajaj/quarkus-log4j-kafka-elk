@@ -1,36 +1,15 @@
 curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d '{
- "name": "quarkus-logs-elasticsearch-connector",
- "config": {
-   "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
-   "connection.url": "http://elasticsearch:9200",
-   "tasks.max": "1",
-   "topics": "quarkus-logs",
-   "type.name": "_doc"
- }
-}'
-
-------------------------------
-curl -X PUT localhost:8083/connectors/quarkus-logs-elasticsearch-connector/config -H "Content-Type: application/json" -d ‘{
- "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
- "connection.url": "http://elasticsearch:9200",
- "tasks.max": "1",
- "topics": "quarkus-logs",
- "name": "quarkus-logs-elasticsearch-connector",
- "type.name": "_doc",
- "value.converter": "org.apache.kafka.connect.json.JsonConverter",
- "value.converter.schemas.enable": "false"
-}’
-
--------------------------------
-$ curl -X PUT localhost:8083/connectors/quarkus-logs-elasticsearch-connector/config -H "Content-Type: application/json" -d ‘{
- "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
- "connection.url": "http://elasticsearch:9200",
- "tasks.max": "1",
- "topics": "quarkus-logs",
- "name": "quarkus-logs-elasticsearch-connector",
- "type.name": "_doc",
- "value.converter": "org.apache.kafka.connect.json.JsonConverter",
- "value.converter.schemas.enable": "false",
- "schema.ignore": "true",
- "key.ignore": "true"
-}’
+     "name":"quarkus-logs-elasticsearch-connector",
+     "config":{
+        "connector.class":"io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+        "connection.url":"http://elasticsearch:9200",
+        "tasks.max":"1",
+        "topics":"quarkus-logs",
+        "type.name":"_doc",
+        "name":"quarkus-logs-elasticsearch-connector",
+        "value.converter":"org.apache.kafka.connect.converters.ByteArrayConverter",
+        "value.converter.schemas.enable":"false",
+        "schema.ignore":"true",
+        "key.ignore":"true"
+     }
+  }'
