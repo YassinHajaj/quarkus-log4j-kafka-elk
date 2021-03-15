@@ -6,15 +6,8 @@
             <Property name="bootstrap.servers">${env:KAFKA_BOOTSTRAP_SERVER}</Property>
             <Property name="acks">0</Property>
         </Kafka>
-
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-        </Console>
     </Appenders>
     <Loggers>
-        <Root level="trace">
-            <AppenderRef ref="Console"/>
-        </Root>
         <Root level="debug">
             <AppenderRef ref="Kafka"/>
         </Root>
