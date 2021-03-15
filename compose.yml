@@ -11,11 +11,6 @@ services:
       ZOO_MY_ID: 1
       ZOO_PORT: 2181
       ZOO_SERVERS: server.1=zookeeper-container:2888:3888
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:2181" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
   kafka-broker:
     image: confluentinc/cp-kafka:5.5.1
@@ -33,11 +28,6 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper-container
-    healthcheck:
-      test: [ "CMD", "kafka-topics", "--list", "--boostrap-server", "localhost:9092" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
   quarkus:
     image: quarkus/quarkus-log4j2-kafka-elk-jvm
@@ -51,12 +41,23 @@ services:
       - kafka-broker
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.4.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
     container_name: elasticsearch
     ports:
       - 9200:9200
     environment:
       - discovery.type=single-node
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.11.2
+    container_name: kibana
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    depends_on:
+      - elasticsearch
 
   kafka-connect:
     image: confluentinc/cp-kafka-connect:3.3.0
