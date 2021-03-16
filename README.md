@@ -1,5 +1,7 @@
 # Logs from Quarkus to Kibana through Kafka in less than 15 minutes
 
+![kafka-connect](./static/kafka-connect.png)
+
 In this article, we'll see how we can produce logs and read them in a dashboard using the following technologies:
 
 * Quarkus
