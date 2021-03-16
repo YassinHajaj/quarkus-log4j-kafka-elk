@@ -521,4 +521,10 @@ Let's create the index pattern !
 
 ![kibana-analytics-discover](./static/kibana-analytics-discover.png)
 
+You can now explore the data !
+
 ![kibana-end-result](./static/kibana-end-result.png)
+
+We did it ! 😁
+
+![we-did-it](./static/we-did-it.gif)
