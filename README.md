@@ -210,9 +210,11 @@ following configuration which uses this environment variable:
 
 Now that this is done, we'll test it.
 
-Then, of course, we'll continue with Kafka-Connect, ElasticSearch and Kibana.
+Run the containers
 
-Let's start by doing two `curl`
+`docker-compose -f docker-compose.yml up`
+
+Let's continue by doing two `curl`
 
 ```
 $ curl http://localhost:8082/hello-resteasy
@@ -271,11 +273,14 @@ Success !
 
 ![Success !](./static/success.gif)
 
+Then, of course, we'll continue with `Kafka-Connect`, `ElasticSearch` and `Kibana`.
+
 ## Kafka-Connect
 
 Kafka Connect helps us integrate Kafka with third party software smoothly.
 
-We'll use the `cp-kafka-connect` Docker image, it contains the `ElasticsearchSinkConnector` which will come in handy to integrate and flush data inside of ElasticSearch.
+We'll use the `cp-kafka-connect` Docker image, it contains the `ElasticsearchSinkConnector` which will come in handy to
+integrate and flush data inside of ElasticSearch.
 
 Let's check the Docker compose configuration
 
