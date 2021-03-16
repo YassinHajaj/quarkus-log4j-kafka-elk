@@ -514,3 +514,11 @@ Now, we'll continue with creating an Index Pattern through the Stack Management 
 Let's create the index pattern !
 
 ![kibana-index-pattern-create](./static/kibana-create-index-pattern.png)
+
+![kibana-quarkus-logs](./static/kibana-quarkus-logs.png)
+
+![kibana-quarkus-logs-2](./static/kibana-quarkus-logs-2.png)
+
+![kibana-analytics-discover](./static/kibana-analytics-discover.png)
+
+![kibana-end-result](./static/kibana-end-result.png)
