@@ -1,4 +1,4 @@
-# Logs from Quarkus to Kibana through Kafka
+# Logs from Quarkus to Kibana through Kafka in less than 15 minutes
 
 In this article, we'll see how we can produce logs and read them in a dashboard using the following technologies:
 
@@ -212,7 +212,7 @@ Now that this is done, we'll test it.
 
 Run the containers
 
-`docker-compose -f docker-compose.yml up`
+`$ docker-compose -f docker-compose.yml up`
 
 Let's continue by doing two `curl`
 
@@ -224,7 +224,11 @@ $ curl http://localhost:8082/hello-resteasy/error
 Now, that is done, we should find our logs back in the topic. Let's check !
 
 ```
-docker exec -it "kafka-broker" kafka-console-consumer --topic quarkus-logs --bootstrap-server localhost:9092 --from-beginning
+$ docker exec -it "kafka-broker" \
+  kafka-console-consumer \
+  --topic quarkus-logs \
+  --bootstrap-server localhost:9092 \
+  --from-beginning
 ```
 
 This should print the following
@@ -277,12 +281,27 @@ Then, of course, we'll continue with `ElasticSearch`, `Kafka-Connect` and `Kiban
 
 ## ElasticSearch
 
+We'll use the following Docker compose configuration to run our `ElasticSearch`
+
+```
+elasticsearch:
+  image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
+  container_name: elasticsearch
+  ports:
+    - 9200:9200
+  environment:
+    - discovery.type=single-node
+```
+
+Nothing else to be done !
+It will now be part of our containers once the Docker compose is ran again !
+
 ## Kafka-Connect
 
 Kafka Connect helps us integrate Kafka with third party software smoothly.
 
 We'll use the `cp-kafka-connect` Docker image, it contains the `ElasticsearchSinkConnector` which will come in handy to
-integrate and flush data inside of ElasticSearch.
+integrate and flush data inside ElasticSearch.
 
 Let's check the Docker compose configuration
 
@@ -324,10 +343,10 @@ CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
 CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
 ```
 
-Once we'll be runnning the containers again, we'll need to create our connector
+Once we'll be running the containers again, we'll need to create our connector
 
 ```
-curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d '{
+$ curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d '{
      "name":"quarkus-logs-elasticsearch-connector",
      "config":{
         "connector.class":"io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
@@ -348,9 +367,106 @@ curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json
 
 Make sure the connector is created by doing a second `curl`
 
-`curl localhost:8083/connectors`
+`$ curl localhost:8083/connectors`
 
 And see if the `quarkus-logs-elasticsearch-connector` appears in the response
+
+### Test again !
+
+Now that we've set up `ElasticSearch` and its Kafka Connector, let's test !
+
+Run the containers
+
+`$ docker-compose -f docker-compose.yml up`
+
+Then two `curl`
+
+```
+$ curl http://localhost:8082/hello-resteasy
+$ curl http://localhost:8082/hello-resteasy/error
+```
+
+And now, instead of checking the messages in Kafka, we'll directly target the `ElasticSearch` index
+
+```
+$ curl localhost:9200/quarkus-logs/_search
+```
+
+And the following is printed to the console and proves our integration with `ElasticSearch` is working !
+
+```
+{
+   "took":70,
+   "timed_out":false,
+   "_shards":{
+      "total":1,
+      "successful":1,
+      "skipped":0,
+      "failed":0
+   },
+   "hits":{
+      "total":{
+         "value":2,
+         "relation":"eq"
+      },
+      "max_score":1.0,
+      "hits":[
+         {
+            "_index":"quarkus-logs",
+            "_type":"_doc",
+            "_id":"quarkus-logs+0+0",
+            "_score":1.0,
+            "_source":{
+               "threadId":17,
+               "loggerFqcn":"org.apache.logging.log4j.spi.AbstractLogger",
+               "level":"INFO",
+               "endOfBatch":false,
+               "thread":"executor-thread-1",
+               "source":{
+                  "file":"GreetingResource.java",
+                  "method":"hello",
+                  "line":19,
+                  "class":"be.yh.GreetingResource"
+               },
+               "loggerName":"be.yh.GreetingResource",
+               "message":"Hello called",
+               "contextMap":[
+                  
+               ],
+               "threadPriority":5,
+               "timeMillis":1615854266772
+            }
+         },
+         {
+            "_index":"quarkus-logs",
+            "_type":"_doc",
+            "_id":"quarkus-logs+0+1",
+            "_score":1.0,
+            "_source":{
+               "threadId":17,
+               "loggerFqcn":"org.apache.logging.log4j.spi.AbstractLogger",
+               "level":"ERROR",
+               "endOfBatch":false,
+               "thread":"executor-thread-1",
+               "source":{
+                  "file":"GreetingResource.java",
+                  "method":"error",
+                  "line":27,
+                  "class":"be.yh.GreetingResource"
+               },
+               "loggerName":"be.yh.GreetingResource",
+               "message":"Error called",
+               "contextMap":[
+                  
+               ],
+               "threadPriority":5,
+               "timeMillis":1615854267944
+            }
+         }
+      ]
+   }
+}
+```
 
 ## Kibana
 
