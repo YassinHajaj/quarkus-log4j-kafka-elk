@@ -12,6 +12,14 @@ In this article, we'll see how we can produce logs and read them in a dashboard 
 * Kibana
 * Docker-Compose
 
+## Prerequisites
+
+* Java
+* Maven
+* Docker-compose
+* `curl` (through Git Bash if you're on Windows is OK)
+* A browser 😉
+
 ## Quarkus
 
 We'll first need to generate a Quarkus application.
