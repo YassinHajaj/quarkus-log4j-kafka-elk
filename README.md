@@ -165,6 +165,7 @@ zookeeper-container:
     ZOO_MY_ID: 1
     ZOO_PORT: 2181
     ZOO_SERVERS: server.1=zookeeper-container:2888:3888
+  restart: always
 
 kafka-broker:
   image: confluentinc/cp-kafka:5.5.1
@@ -182,6 +183,7 @@ kafka-broker:
     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
   depends_on:
     - zookeeper-container
+  restart: always
 ```
 
 ### Quarkus Application
@@ -199,6 +201,7 @@ quarkus:
     KAFKA_BOOTSTRAP_SERVER: kafka-broker:19092
   depends_on:
     - kafka-broker
+  restart: always
 ```
 
 You noticed the environment variable `KAFKA_BOOTSTRAP_SERVER`, if you remember correctly from our `log4j2`, we had the
@@ -291,6 +294,7 @@ elasticsearch:
     - 9200:9200
   environment:
     - discovery.type=single-node
+  restart: always
 ```
 
 Nothing else to be done !
@@ -334,6 +338,7 @@ kafka-connect:
     CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
     CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
     CONNECT_LOG4J_LOGGERS: org.apache.kafka.connect=DEBUG
+  restart: always
 ```
 
 It is very important to add the following to make sure Kafka Connect does not complain about a lack of schemas
@@ -470,4 +475,42 @@ And the following is printed to the console and proves our integration with `Ela
 
 ## Kibana
 
-[https://code.quarkus.io/]: https://code.quarkus.io/
+Now that our communication is established between the Quarkus' application logs and `ElasticSearch`, we'll want to
+display them on a screen.
+
+The Elastic stack comes with `Kibana`.
+
+### Configuration
+
+```
+kibana:
+  image: docker.elastic.co/kibana/kibana:7.11.2
+  container_name: kibana
+  ports:
+    - 5601:5601
+  environment:
+    ELASTICSEARCH_URL: http://elasticsearch:9200
+    ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+  depends_on:
+    - elasticsearch
+```
+
+### User Interface
+
+Now that `Kibana` is configured, we'll run our containers again
+
+`$ docker-compose -f docker-compose.yml up`
+
+Once this is done, we'll access `Kibana` through [http://localhost:5601](http://localhost:5601)
+
+If everything went well, we'll land on the following page
+
+![kibana-landing](./static/kibana-landing.png)
+
+Now, we'll continue with creating an Index Pattern through the Stack Management menu on the left
+
+![kibana-stack-management](./static/kibana-stack-management.png)
+
+Let's create the index pattern !
+
+![kibana-index-pattern-create](./static/kibana-create-index-pattern.png)

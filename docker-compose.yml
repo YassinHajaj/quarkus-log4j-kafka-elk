@@ -51,18 +51,18 @@ services:
     environment:
       - discovery.type=single-node
     restart: always
-#
-#  kibana:
-#    image: docker.elastic.co/kibana/kibana:7.11.2
-#    container_name: kibana
-#    ports:
-#      - 5601:5601
-#    environment:
-#      ELASTICSEARCH_URL: http://elasticsearch:9200
-#      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
-#    depends_on:
-#      - elasticsearch
-#
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.11.2
+    container_name: kibana
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    depends_on:
+      - elasticsearch
+
   kafka-connect:
     image: confluentinc/cp-kafka-connect:3.3.0
     hostname: kafka-connect
