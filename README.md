@@ -201,7 +201,8 @@ quarkus:
     - kafka-broker
 ```
 
-You noticed the environment variable `KAFKA_BOOTSTRAP_SERVER`, if you remember correctly from our `log4j2`, we had the following configuration which uses this environment variable:
+You noticed the environment variable `KAFKA_BOOTSTRAP_SERVER`, if you remember correctly from our `log4j2`, we had the
+following configuration which uses this environment variable:
 
 `<Property name="bootstrap.servers">${env:KAFKA_BOOTSTRAP_SERVER}</Property>`
 
@@ -269,6 +270,52 @@ This should print the following
 Success !
 
 ![Success !](./static/success.gif)
+
+## Kafka-Connect
+
+Kafka Connect helps us integrate Kafka with third party software smoothly.
+
+We'll use the `cp-kafka-connect` Docker image, it contains the `ElasticsearchSinkConnector` which will come in handy to integrate and flush data inside of ElasticSearch.
+
+Let's check the Docker compose configuration
+
+```
+kafka-connect:
+  image: confluentinc/cp-kafka-connect:3.3.0
+  hostname: kafka-connect
+  container_name: kafka-connect
+  depends_on:
+    - zookeeper-container
+    - kafka-broker
+  ports:
+    - "8083:8083"
+  environment:
+    CONNECT_BOOTSTRAP_SERVERS: 'kafka-broker:19092'
+    CONNECT_REST_ADVERTISED_HOST_NAME: connect
+    CONNECT_REST_PORT: 8083
+    CONNECT_GROUP_ID: compose-connect-group
+    CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+    CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+    CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+    CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+    CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+    CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+    CONNECT_ZOOKEEPER_CONNECT: 'zookeeper-container:2181'
+    CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+    CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+    CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
+    CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
+    CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+    CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+    CONNECT_LOG4J_LOGGERS: org.apache.kafka.connect=DEBUG
+```
+
+It is very important to add the following to make sure Kafka Connect does not complain about a lack of schemas
+
+```
+CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
+CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
+```
 
 ## ElasticSearch
 
