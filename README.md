@@ -322,6 +322,34 @@ CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
 CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
 ```
 
+Once we'll be runnning the containers again, we'll need to create our connector
+
+```
+curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d '{
+     "name":"quarkus-logs-elasticsearch-connector",
+     "config":{
+        "connector.class":"io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+        "connection.url":"http://elasticsearch:9200",
+        "tasks.max":"1",
+        "topics":"quarkus-logs",
+        "type.name":"_doc",
+        "name":"quarkus-logs-elasticsearch-connector",
+        "value.converter":"org.apache.kafka.connect.json.JsonConverter",
+        "value.converter.schemas.enable":"false",
+        "key.converter.schemas.enable":"false",
+        "schemas.enable":"false",
+        "schema.ignore":"true",
+        "key.ignore":"true"
+     }
+  }'
+```
+
+Make sure the connector is created by doing a second `curl`
+
+`curl localhost:8083/connectors`
+
+And see if the `quarkus-logs-elasticsearch-connector` appears in the response
+
 ## ElasticSearch
 
 ## Kibana
