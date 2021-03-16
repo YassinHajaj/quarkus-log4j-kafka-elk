@@ -273,7 +273,9 @@ Success !
 
 ![Success !](./static/success.gif)
 
-Then, of course, we'll continue with `Kafka-Connect`, `ElasticSearch` and `Kibana`.
+Then, of course, we'll continue with `ElasticSearch`, `Kafka-Connect` and `Kibana`.
+
+## ElasticSearch
 
 ## Kafka-Connect
 
@@ -349,8 +351,6 @@ Make sure the connector is created by doing a second `curl`
 `curl localhost:8083/connectors`
 
 And see if the `quarkus-logs-elasticsearch-connector` appears in the response
-
-## ElasticSearch
 
 ## Kibana
 
